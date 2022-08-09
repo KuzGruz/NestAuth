@@ -1,0 +1,53 @@
+version: "3"
+services:
+  postgres:
+    container_name: postgres
+    restart: unless-stopped
+    image: postgres:latest
+    hostname: postgres
+    ports:
+      - "${POSTGRES_PORT}:5432"
+    volumes:
+      - db:/var/lib/postgresql/data
+    env_file:
+      - .env
+    networks:
+      - app
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    hostname: pgadmin
+    depends_on:
+      - postgres
+    restart: unless-stopped
+    ports:
+      - "${PG_ADMIN_PORT}:80"
+    volumes:
+      - pgAdmin:/var/lib/pgadmin
+    env_file:
+      - .env
+    networks:
+      - app
+
+  redis:
+    container_name: redis
+    image: redis:latest
+    hostname: redis
+    ports:
+      - "${REDIS_PORT}:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - app
+
+volumes:
+  db:
+    driver: local
+  pgAdmin:
+  redis-data:
+
+
+networks:
+  app:
+    driver: bridge
